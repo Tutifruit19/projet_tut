@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <link href="style.css" rel="stylesheet">
+
+    <head>
+        <div id="title"> </div>
+        <meta charset="UTF-8" />
+        <div id="Menu déroulant"> 
+            <form action="action.py" method="post" >
+                <p> 
+                    <label for="selection paramètre"> Sélection du paramètre: </label>
+                    <select id="selection_paramètre" name="selection_paramètre">
+                        <option value="T2m"> T2m </option>
+                        <option value="RR"> RR </option>
+                        <option value="Vent"> vent </option>
+                    </select>
+                    <label for="Selection du modèle"> Selection du modèle: </label>
+                    <select id="selection_modèle" name="selection_modèle">
+                        <option value="EPS"> EPS </option>
+                        <option value="PE-ARO"> PE-AROME </option>
+                        <option value="PE-ARP"> PE-ARP  </option>
+                    </select>
+                    <label for="selection point de grille"> Sélection du lieu: </label>
+                    <select id="selection_pt" name="selection_pt">
+                        <option value="Toulouse"> Toulouse </option>
+                    </select>
+                </p>
+                <p>
+                <input type="submit">
+            </form>
+        </div>
+    </head>
+    <body>

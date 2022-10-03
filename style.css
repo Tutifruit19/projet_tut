@@ -1048,3 +1048,10 @@ g.highcharts-series, .highcharts-markers, .highcharts-point {
 .highcharts-grid-axis .highcharts-axis-line {
   stroke-width: 1px;
 }
+
+div#title {
+  text-shadow:0 0 30px #4e2d33,5px 9px 5px rgba(0, 0, 0, 0.5), 0 0 150px #EC637B;color:#632d39;
+  margin-left: auto;
+  margin-right: auto;
+  width: 25em;
+}
