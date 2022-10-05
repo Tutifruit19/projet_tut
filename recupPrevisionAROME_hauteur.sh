@@ -28,7 +28,7 @@ validite=$(opedates ${run} +${echeance}hours)
 jour=${run:0:8}
 UTEMP=$6
 # pour creer sans erreur un repertoir et ses sous repertoires
-mkdir -p ${UTEMP}/${jour}
+#mkdir -p ${UTEMP}/${jour}
 #Construction de la requete DAP3
 echo "#RQST
 #NFIC P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
@@ -47,8 +47,8 @@ rm requete.${suffixe}
 
 if [ -f P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ]
 then
-  rm -f ${UTEMP}/${jour}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
-  mv P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ${UTEMP}/${jour}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
+  rm -f ${UTEMP}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
+  mv P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ${UTEMP}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
 fi
 
 
