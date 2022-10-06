@@ -21,7 +21,7 @@ echeance=$2
 hauteur=$3
 param=$4
 membre=$5
-grille=EURAT5
+grille=EURAT01
 # pour unicite des fichiers et travail en parallele
 suffixe=$(date +%s).$$
 validite=$(opedates ${run} +${echeance}hours)
