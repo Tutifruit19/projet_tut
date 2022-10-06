@@ -22,14 +22,14 @@ def recovery_data(echeance,run_debut,param,hauteur,membre):
     os.system("mkdir PE_"+membre+str(run_debut)+"_"+str(echeance)+"_"+str(param)+"_"+str(hauteur))
     path = "PE_"+membre+str(run_debut)+"_"+str(echeance)+"_"+str(param)+"_"+str(hauteur)
     #construction de la liste de date:
-    delta = timedelta(hours=6)
+    delta = timedelta(hours=12)
     t = convert(run_debut)
     difference = diff(echeance,run_debut)
     list_timerun = [t.strftime('%Y%m%d%H')]
     list_echeance = [difference]
     while t < convert(echeance):
         t = t + delta
-        difference = difference-6
+        difference = difference-12
         list_timerun.append(t.strftime('%Y%m%d%H'))
         list_echeance.append(difference)
     list_timerun.pop()
@@ -38,9 +38,7 @@ def recovery_data(echeance,run_debut,param,hauteur,membre):
         for i in range(len(list_timerun)):
             run = list_timerun[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionAROME_hauteur.sh "+run+" "+str(profondeur)+" 2 T "+membre+" /home/mpma/henona/recovery_data/"+path)
-            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun[i]+"-ECH-"+str(list_echeance[i])+".grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun[i]+"-ECH-"+str(list_echeance[i])+".nc")
+            os.system("./recupPrevisionARPEGE_hauteur.sh "+run+" "+str(profondeur)+" 2 T "+membre+" /home/mpma/henona/recovery_data/"+path)
+            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT5-"+list_timerun[i]+"-ECH-"+str(list_echeance[i])+".grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT5-"+list_timerun[i]+"-ECH-"+str(list_echeance[i])+".nc")
 
-membres_PEARO = ["PEAROME000","PEAROME001","PEAROME002","PEAROME003","PEAROME004","PEAROME005","PEAROME006","PEAROME007","PEAROME008","PEAROME009","PEAROME010","PEAROME011","PEAROME012","PEAROME013","PEAROME014","PEAROME015","PEAROME016"]
-for x in membres_PEARO:
-    recovery_data("2022100509","2022100315","T","2",x)
+recovery_data("2022100506","2022100318","T","2","PEARP001")
