@@ -42,14 +42,11 @@ def recovery_data_aro(echeance,run_debut,param,hauteur,membre):
         list_echeance.append(difference)
     list_timerun_aro.pop()
     list_echeance.pop()
-    print(list_timerun_aro)
-    print(list_echeance)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if len(list_timerun_aro) == len(list_echeance):
         for i in range(len(list_timerun_aro)):
             run = list_timerun_aro[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionAROME_hauteur.sh "+run+" "+str(profondeur)+" 2 T "+membre+" /home/mpma/henona/recovery_data/"+path)
+            os.system("./recupPrevisionAROME_sol.sh "+run+" "+str(profondeur)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path)
             os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+".grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+".nc")
     return list_timerun_aro
 
@@ -73,22 +70,22 @@ def recovery_data_arp(echeance,run_debut,param,hauteur,membre):
         for i in range(len(list_timerun_arp)):
             run = list_timerun_arp[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionARPEGE_hauteur.sh "+run+" "+str(profondeur)+" 2 T "+membre+" /home/mpma/henona/recovery_data/"+path)
+            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path)
             os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".nc")
     return list_timerun_arp
 def extraction_pt_grille(lat,lon,filename,path,cible):
     #Toulouse lat=43.5866 et lon=1.4605
     os.system("cdo -remapnn,lon="+lon+"/lat="+lat+" "+path+" "+cible+"/remap_"+filename)
-    data = xr.open_dataset(cible+"/remap_"+filename)['t2m'].values
+    data = xr.open_dataset(cible+"/remap_"+filename)['unknown'].values
     print(data)
 
 membres_PEARO = ["PEAROME000","PEAROME001","PEAROME002","PEAROME003","PEAROME004","PEAROME005","PEAROME006","PEAROME007","PEAROME008","PEAROME009","PEAROME010","PEAROME011","PEAROME012","PEAROME013","PEAROME014","PEAROME015","PEAROME016"]
 for x in membres_PEARO:
-    list_timerun_aro = recovery_data_aro(echeance_ARO,date_debut_ARO,"T","2",x)
+    list_timerun_aro = recovery_data_aro(echeance_ARO,date_debut_ARO,"EAU","0",x)
 
 membres_ARP = ["PEARP000","PEARP001","PEARP002","PEARP003","PEARP004","PEARP005","PEARP006","PEARP007","PEARP008","PEARP009","PEARP010","PEARP011","PEARP012","PEARP013","PEARP014","PEARP015","PEARP016","PEARP017","PEARP018","PEARP019","PEARP020","PEARP021","PEARP022","PEARP023","PEARP024","PEARP025","PEARP026","PEARP027","PEARP028","PEARP029","PEARP030","PEARP031","PEARP032","PEARP033","PEARP034"]
 for x in membres_ARP:
-    list_timerun_arp = recovery_data_arp(echeance_ARP,date_debut_ARP,"T","2",x)
+    list_timerun_arp = recovery_data_arp(echeance_ARP,date_debut_ARP,"EAU","0",x)
 
 os.system("mkdir temporaire")
 list_files = os.listdir("/home/mpma/henona/recovery_data")
@@ -105,7 +102,6 @@ for x in list_files:
                 pass
     else:
         pass
-
 os.system("rm -r /home/mpma/henona/recovery_data/PE*")
 
 list_dossier = os.listdir("/home/mpma/henona/recovery_data/temporaire")
@@ -116,17 +112,13 @@ def recup_ARO():
         if x[:10] == "PE_PEAROME":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:13]]
-            new_list_files = sorted(list_files,reverse=True)
-            for y in new_list_files:
-                print(y)
-                print("-------------------------------------------------------------------")
+            for y in list_files:
                 data = xr.open_dataset("/home/mpma/henona/recovery_data/temporaire/"+x+"/"+y)
-                membre.append(data["t2m"].values[0][0][0])
+                membre.append(data["unknown"].values[0][0][0])
             list_data.append(membre)
         else:
             pass
     return list_data
-
 
 def recup_ARP():
     list_data = []
@@ -134,10 +126,9 @@ def recup_ARP():
         if x[:8] == "PE_PEARP":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:11]]
-            new_list_files = sorted(list_files,reverse=True)
-            for y in new_list_files:
+            for y in list_files:
                 data = xr.open_dataset("/home/mpma/henona/recovery_data/temporaire/"+x+"/"+y)
-                membre.append(data["t2m"].values[0][0][0])
+                membre.append(data["unknown"].values[0][0][0])
             list_data.append(membre)
         else:
             pass
@@ -160,7 +151,7 @@ def sort_ARO(tab):
         Q_90.append(np.quantile(run,0.90))
         Q_25.append(np.quantile(run,0.25))
         Q_75.append(np.quantile(run,0.75))
-    return [run_deterministe,Q_10,Q_90,Q_25,Q_75]
+    return [run_deterministe,Q_10,Q_90,Q_75,Q_25]
 
 def sort_ARP(tab):
     for i in range(np.shape(tab)[0]):
@@ -191,7 +182,7 @@ def making_output(data,filename):
 
 ARO = recup_ARO()
 ARP = recup_ARP()
-"""output_ARO = sort_ARO(ARO)
+output_ARO = sort_ARO(ARO)
 output_ARP = sort_ARP(ARP)
 making_output(output_ARO[0],"/home/mpma/henona/run_determiste_ARO.txt")
 making_output(output_ARO[1],"/home/mpma/henona/Q_10_ARO.txt")
@@ -318,9 +309,9 @@ fig = go.Figure([
     )
 ])
 fig.update_layout(
-    yaxis_title='temperature en Kelvin',
+    yaxis_title='Precips',
     title='Evolution des runs AROME',
     hovermode="x"
 )
 fig.show()
-fig.write_html('/home/mpma/henona/graph_test.html')"""
+fig.write_html('/home/mpma/henona/graph_test.html')
