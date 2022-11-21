@@ -6,14 +6,17 @@ import numpy as np
 import os
 import plotly.graph_objs as go
 
-date_debut_ARO = '2022111521'
-echeance_ARO = '2022111715'
-date_debut_ARP= '2022111518'
-echeance_ARP = '2022111712'
+date_debut_ARO = '2022111821'
+echeance_ARO = '2022112015'
+date_debut_ARP= '2022111700'
+echeance_ARP = '2022112015'
+
+sel_lon = '1.4605' #selection pour Toulouse
+sel_lat = '43.5866' #selection pour Toulouse
 
 os.system('rm -f /home/mpma/henona/Q_*')
 os.system('rm -f /home/mpma/henona/run_*')
-os.system('rm -r /home/mpma/henona//recovery_data/temporaire')
+os.system('rm -r /home/mpma/henona/recovery_data/temporaire')
 
 
 def convert(str_time):
@@ -42,9 +45,6 @@ def recovery_data_aro(echeance,run_debut,param,hauteur,membre):
         list_echeance.append(difference)
     list_timerun_aro.pop()
     list_echeance.pop()
-    print(list_timerun_aro)
-    print(list_echeance)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if len(list_timerun_aro) == len(list_echeance):
         for i in range(len(list_timerun_aro)):
             run = list_timerun_aro[i]
@@ -100,7 +100,7 @@ for x in list_files:
         os.system("mkdir temporaire/"+x)
         for y in list_nc:
             if y[-2:] =='nc':
-                extraction_pt_grille("43.5866","1.4605",y,"/home/mpma/henona/recovery_data/"+x+"/"+y,"temporaire/"+x)
+                extraction_pt_grille(sel_lat,sel_lon,y,"/home/mpma/henona/recovery_data/"+x+"/"+y,"temporaire/"+x)
             else:
                 pass
     else:
@@ -116,7 +116,7 @@ def recup_ARO():
         if x[:10] == "PE_PEAROME":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:13]]
-            new_list_files = sorted(list_files,reverse=True)
+            new_list_files = sorted(list_files,reverse=False)
             for y in new_list_files:
                 print(y)
                 print("-------------------------------------------------------------------")
@@ -134,8 +134,10 @@ def recup_ARP():
         if x[:8] == "PE_PEARP":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:11]]
-            new_list_files = sorted(list_files,reverse=True)
+            new_list_files = sorted(list_files,reverse=False)
             for y in new_list_files:
+                print(y)
+                print("-------------------------------------------------------------------")
                 data = xr.open_dataset("/home/mpma/henona/recovery_data/temporaire/"+x+"/"+y)
                 membre.append(data["t2m"].values[0][0][0])
             list_data.append(membre)
@@ -191,7 +193,7 @@ def making_output(data,filename):
 
 ARO = recup_ARO()
 ARP = recup_ARP()
-"""output_ARO = sort_ARO(ARO)
+output_ARO = sort_ARO(ARO)
 output_ARP = sort_ARP(ARP)
 making_output(output_ARO[0],"/home/mpma/henona/run_determiste_ARO.txt")
 making_output(output_ARO[1],"/home/mpma/henona/Q_10_ARO.txt")
@@ -236,7 +238,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 10 Arome',
@@ -247,7 +249,7 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(100, 100, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arome',
@@ -256,7 +258,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 25 Arome',
@@ -267,7 +269,7 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(200, 200, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='run deterministe Arpege',
@@ -283,7 +285,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q_10 Arpege',
@@ -294,7 +296,7 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(20, 20, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arpege',
@@ -303,7 +305,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 25 Arpege',
@@ -314,13 +316,13 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(250, 250, 250, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     )
 ])
 fig.update_layout(
-    yaxis_title='temperature en Kelvin',
-    title='Evolution des runs AROME',
+    yaxis_title='Temperature en degrès',
+    title='Evolution des runs AROME et ARPEGE pour le ' + echeance_ARO+' ,pour le point de grille de Toulouse ('+sel_lon+'/'+sel_lat+').',
     hovermode="x"
 )
 fig.show()
-fig.write_html('/home/mpma/henona/graph_test.html')"""
+fig.write_html('/home/mpma/henona/graph_test.html')
