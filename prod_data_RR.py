@@ -6,14 +6,17 @@ import numpy as np
 import os
 import plotly.graph_objs as go
 
-date_debut_ARO = '2022111521'
-echeance_ARO = '2022111715'
-date_debut_ARP= '2022111518'
-echeance_ARP = '2022111712'
+date_debut_ARO = '2022112015'
+echeance_ARO = '2022112115'
+date_debut_ARP= '2022112012'
+echeance_ARP = '2022112115'
+
+sel_lon = '1.4605' #selection pour Toulouse
+sel_lat = '43.5866' #selection pour Toulouse
 
 os.system('rm -f /home/mpma/henona/Q_*')
 os.system('rm -f /home/mpma/henona/run_*')
-os.system('rm -r /home/mpma/henona//recovery_data/temporaire')
+os.system('rm -r /home/mpma/henona/recovery_data/temporaire')
 
 
 def convert(str_time):
@@ -70,7 +73,7 @@ def recovery_data_arp(echeance,run_debut,param,hauteur,membre):
         for i in range(len(list_timerun_arp)):
             run = list_timerun_arp[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path)
+            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur)+" 0 PRECIP "+membre+" /home/mpma/henona/recovery_data/"+path)
             os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".nc")
     return list_timerun_arp
 def extraction_pt_grille(lat,lon,filename,path,cible):
@@ -79,13 +82,19 @@ def extraction_pt_grille(lat,lon,filename,path,cible):
     data = xr.open_dataset(cible+"/remap_"+filename)['unknown'].values
     print(data)
 
+def extraction_pt_grille_arp(lat,lon,filename,path,cible):
+    #Toulouse lat=43.5866 et lon=1.4605
+    os.system("cdo -remapnn,lon="+lon+"/lat="+lat+" "+path+" "+cible+"/remap_"+filename)
+    data = xr.open_dataset(cible+"/remap_"+filename)['tp'].values
+    print(data)
+
 membres_PEARO = ["PEAROME000","PEAROME001","PEAROME002","PEAROME003","PEAROME004","PEAROME005","PEAROME006","PEAROME007","PEAROME008","PEAROME009","PEAROME010","PEAROME011","PEAROME012","PEAROME013","PEAROME014","PEAROME015","PEAROME016"]
 for x in membres_PEARO:
     list_timerun_aro = recovery_data_aro(echeance_ARO,date_debut_ARO,"EAU","0",x)
 
 membres_ARP = ["PEARP000","PEARP001","PEARP002","PEARP003","PEARP004","PEARP005","PEARP006","PEARP007","PEARP008","PEARP009","PEARP010","PEARP011","PEARP012","PEARP013","PEARP014","PEARP015","PEARP016","PEARP017","PEARP018","PEARP019","PEARP020","PEARP021","PEARP022","PEARP023","PEARP024","PEARP025","PEARP026","PEARP027","PEARP028","PEARP029","PEARP030","PEARP031","PEARP032","PEARP033","PEARP034"]
 for x in membres_ARP:
-    list_timerun_arp = recovery_data_arp(echeance_ARP,date_debut_ARP,"EAU","0",x)
+    list_timerun_arp = recovery_data_arp(echeance_ARP,date_debut_ARP,"PRECIP","0",x)
 
 os.system("mkdir temporaire")
 list_files = os.listdir("/home/mpma/henona/recovery_data")
@@ -97,11 +106,15 @@ for x in list_files:
         os.system("mkdir temporaire/"+x)
         for y in list_nc:
             if y[-2:] =='nc':
-                extraction_pt_grille("43.5866","1.4605",y,"/home/mpma/henona/recovery_data/"+x+"/"+y,"temporaire/"+x)
+                if x[:8] == 'PE_PEARO':
+                    extraction_pt_grille(sel_lat,sel_lon,y,"/home/mpma/henona/recovery_data/"+x+"/"+y,"temporaire/"+x)
+                else:
+                    extraction_pt_grille_arp(sel_lat,sel_lon,y,"/home/mpma/henona/recovery_data/"+x+"/"+y,"temporaire/"+x)
             else:
                 pass
     else:
         pass
+
 os.system("rm -r /home/mpma/henona/recovery_data/PE*")
 
 list_dossier = os.listdir("/home/mpma/henona/recovery_data/temporaire")
@@ -112,7 +125,10 @@ def recup_ARO():
         if x[:10] == "PE_PEAROME":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:13]]
-            for y in list_files:
+            new_list_files = sorted(list_files,reverse=False)
+            for y in new_list_files:
+                print(y)
+                print("-------------------------------------------------------------------")
                 data = xr.open_dataset("/home/mpma/henona/recovery_data/temporaire/"+x+"/"+y)
                 membre.append(data["unknown"].values[0][0][0])
             list_data.append(membre)
@@ -120,15 +136,19 @@ def recup_ARO():
             pass
     return list_data
 
+
 def recup_ARP():
     list_data = []
     for x in list_dossier:
         if x[:8] == "PE_PEARP":
             list_files = os.listdir("/home/mpma/henona/recovery_data/temporaire/"+x)
             membre = [x[:11]]
-            for y in list_files:
+            new_list_files = sorted(list_files,reverse=False)
+            for y in new_list_files:
+                print(y)
+                print("-------------------------------------------------------------------")
                 data = xr.open_dataset("/home/mpma/henona/recovery_data/temporaire/"+x+"/"+y)
-                membre.append(data["unknown"].values[0][0][0])
+                membre.append(data["tp"].values[0][0][0])
             list_data.append(membre)
         else:
             pass
@@ -144,6 +164,8 @@ def sort_ARO(tab):
     Q_75 = []
     Q_90 = []
     run = []
+    maxi = []
+    mini =[]
     for j in range(1,np.shape(tab)[1]):
         for i in range(np.shape(tab)[0]):
             run.append(tab[i][j])
@@ -151,7 +173,9 @@ def sort_ARO(tab):
         Q_90.append(np.quantile(run,0.90))
         Q_25.append(np.quantile(run,0.25))
         Q_75.append(np.quantile(run,0.75))
-    return [run_deterministe,Q_10,Q_90,Q_75,Q_25]
+        maxi.append(np.max(run))
+        mini.append(np.min(run))
+    return [run_deterministe,Q_10,Q_90,Q_25,Q_75,maxi,mini]
 
 def sort_ARP(tab):
     for i in range(np.shape(tab)[0]):
@@ -189,6 +213,8 @@ making_output(output_ARO[1],"/home/mpma/henona/Q_10_ARO.txt")
 making_output(output_ARO[2],"/home/mpma/henona/Q_90_ARO.txt")
 making_output(output_ARO[3],"/home/mpma/henona/Q_25_ARO.txt")
 making_output(output_ARO[4],"/home/mpma/henona/Q_75_ARO.txt")
+making_output(output_ARO[5],"/home/mpma/henona/Q_max_ARO.txt")
+making_output(output_ARO[6],"/home/mpma/henona/Q_min_ARO.txt")
 making_output(output_ARP[0],"/home/mpma/henona/run_determiste_ARP.txt")
 making_output(output_ARP[1],"/home/mpma/henona/Q_10_ARP.txt")
 making_output(output_ARP[2],"/home/mpma/henona/Q_90_ARP.txt")
@@ -208,9 +234,15 @@ run_deterministe_ARO = np.genfromtxt('/home/mpma/henona/run_determiste_ARO.txt')
 Q_90_ARO = np.genfromtxt('/home/mpma/henona/Q_90_ARO.txt')
 Q_25_ARO = np.genfromtxt('/home/mpma/henona/Q_25_ARO.txt')
 Q_75_ARO = np.genfromtxt('/home/mpma/henona/Q_75_ARO.txt')
+Q_max_ARO = np.genfromtxt('/home/mpma/henona/Q_max_ARO.txt')
+Q_min_ARO = np.genfromtxt('/home/mpma/henona/Q_min_ARO.txt')
 
 list_timerun_aro_2 = [convert(x) for x in list_timerun_aro]
 list_timerun_arp_2 = [convert(x) for x in list_timerun_arp]
+print('------------------------------------------------------------------------')
+print(list_timerun_aro_2)
+print(list_timerun_arp_2)
+print('------------------------------------------------------------------------')
 
 fig = go.Figure([
     go.Scatter(
@@ -221,16 +253,16 @@ fig = go.Figure([
         line=dict(color='rgb(31, 119, 180)'),
     ),
     go.Scatter(
-        name='Q 90 Arome',
+        name='Q 90 AROME',
         x=list_timerun_aro_2,
         y=Q_90_ARO,
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
-        name='Q 10 Arome',
+        name='Q 10 AROME',
         x=list_timerun_aro_2,
         y=Q_10_ARO,
         marker=dict(color="#444"),
@@ -238,7 +270,7 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(100, 100, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arome',
@@ -247,7 +279,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 25 Arome',
@@ -258,14 +290,14 @@ fig = go.Figure([
         mode='lines',
         fillcolor='rgba(200, 200, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='run deterministe Arpege',
         x=list_timerun_arp_2,
         y=run_deterministe_ARP,
         mode='lines',
-        line=dict(color='rgb(31, 119, 180)'), 
+        line=dict(color='rgb(31, 119, 180)'),
     ),
     go.Scatter(
         name='Q 90 Arpege',
@@ -274,18 +306,18 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
-        name='Q_10 Arpege',
+        name='Q 10 Arpege',
         x=list_timerun_arp_2,
         y=Q_10_ARP,
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(20, 20, 20, 0.3)',
+        fillcolor='rgba(100, 100, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arpege',
@@ -294,7 +326,7 @@ fig = go.Figure([
         mode='lines',
         marker=dict(color="#444"),
         line=dict(width=0),
-        showlegend=False
+        #showlegend=False
     ),
     go.Scatter(
         name='Q 25 Arpege',
@@ -303,15 +335,16 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(250, 250, 250, 0.3)',
+        fillcolor='rgba(200, 200, 20, 0.3)',
         fill='tonexty',
-        showlegend=False
+        #showlegend=False
     )
+    
 ])
 fig.update_layout(
-    yaxis_title='Precips',
-    title='Evolution des runs AROME',
+    yaxis_title='Précipitations',
+    title='Evolution des runs AROME et ARPEGE pour le ' + echeance_ARO+' ,pour le point de grille de Toulouse ('+sel_lon+'/'+sel_lat+').',
     hovermode="x"
 )
 fig.show()
-fig.write_html('/home/mpma/henona/graph_test.html')
+fig.write_html('/home/mpma/henona/graph_test_RR.html')
