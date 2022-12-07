@@ -6,13 +6,16 @@ import numpy as np
 import os
 import plotly.graph_objs as go
 
-date_debut_ARO = '2022112015'
-echeance_ARO = '2022112115'
-date_debut_ARP= '2022112012'
-echeance_ARP = '2022112115'
+date_debut_ARO = '2022120521'
+echeance_ARO = '2022120709'
+date_debut_ARP= '2022120318'
+echeance_ARP = '2022120709'
 
 sel_lon = '1.4605' #selection pour Toulouse
 sel_lat = '43.5866' #selection pour Toulouse
+
+"""sel_lon = '1.7655' #Tulle
+sel_lat = '43.2672'"""
 
 os.system('rm -f /home/mpma/henona/Q_*')
 os.system('rm -f /home/mpma/henona/run_*')
@@ -164,8 +167,6 @@ def sort_ARO(tab):
     Q_75 = []
     Q_90 = []
     run = []
-    maxi = []
-    mini =[]
     for j in range(1,np.shape(tab)[1]):
         for i in range(np.shape(tab)[0]):
             run.append(tab[i][j])
@@ -173,9 +174,7 @@ def sort_ARO(tab):
         Q_90.append(np.quantile(run,0.90))
         Q_25.append(np.quantile(run,0.25))
         Q_75.append(np.quantile(run,0.75))
-        maxi.append(np.max(run))
-        mini.append(np.min(run))
-    return [run_deterministe,Q_10,Q_90,Q_25,Q_75,maxi,mini]
+    return [run_deterministe,Q_10,Q_90,Q_25,Q_75]
 
 def sort_ARP(tab):
     for i in range(np.shape(tab)[0]):
@@ -213,8 +212,6 @@ making_output(output_ARO[1],"/home/mpma/henona/Q_10_ARO.txt")
 making_output(output_ARO[2],"/home/mpma/henona/Q_90_ARO.txt")
 making_output(output_ARO[3],"/home/mpma/henona/Q_25_ARO.txt")
 making_output(output_ARO[4],"/home/mpma/henona/Q_75_ARO.txt")
-making_output(output_ARO[5],"/home/mpma/henona/Q_max_ARO.txt")
-making_output(output_ARO[6],"/home/mpma/henona/Q_min_ARO.txt")
 making_output(output_ARP[0],"/home/mpma/henona/run_determiste_ARP.txt")
 making_output(output_ARP[1],"/home/mpma/henona/Q_10_ARP.txt")
 making_output(output_ARP[2],"/home/mpma/henona/Q_90_ARP.txt")
@@ -234,8 +231,7 @@ run_deterministe_ARO = np.genfromtxt('/home/mpma/henona/run_determiste_ARO.txt')
 Q_90_ARO = np.genfromtxt('/home/mpma/henona/Q_90_ARO.txt')
 Q_25_ARO = np.genfromtxt('/home/mpma/henona/Q_25_ARO.txt')
 Q_75_ARO = np.genfromtxt('/home/mpma/henona/Q_75_ARO.txt')
-Q_max_ARO = np.genfromtxt('/home/mpma/henona/Q_max_ARO.txt')
-Q_min_ARO = np.genfromtxt('/home/mpma/henona/Q_min_ARO.txt')
+
 
 list_timerun_aro_2 = [convert(x) for x in list_timerun_aro]
 list_timerun_arp_2 = [convert(x) for x in list_timerun_arp]
@@ -250,7 +246,7 @@ fig = go.Figure([
         x=list_timerun_aro_2,
         y=run_deterministe_ARO,
         mode='lines',
-        line=dict(color='rgb(31, 119, 180)'),
+        line=dict(color='rgb(141, 83, 62)'),
     ),
     go.Scatter(
         name='Q 90 AROME',
@@ -268,7 +264,7 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(100, 100, 20, 0.3)',
+        fillcolor='rgba(255, 183, 174, 0.3)',
         fill='tonexty',
         #showlegend=False
     ),
@@ -288,7 +284,7 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(200, 200, 20, 0.3)',
+        fillcolor='rgba(255, 139, 118, 0.3)',
         fill='tonexty',
         #showlegend=False
     ),
@@ -297,7 +293,7 @@ fig = go.Figure([
         x=list_timerun_arp_2,
         y=run_deterministe_ARP,
         mode='lines',
-        line=dict(color='rgb(31, 119, 180)'),
+        line=dict(color='rgb(173, 72, 71)'),
     ),
     go.Scatter(
         name='Q 90 Arpege',
@@ -315,7 +311,7 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(100, 100, 20, 0.3)',
+        fillcolor='rgba(255, 149, 117, 0.3)',
         fill='tonexty',
         #showlegend=False
     ),
@@ -335,7 +331,7 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(200, 200, 20, 0.3)',
+        fillcolor='rgba(206, 97, 74, 0.3)',
         fill='tonexty',
         #showlegend=False
     )

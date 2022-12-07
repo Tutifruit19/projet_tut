@@ -6,10 +6,10 @@ import numpy as np
 import os
 import plotly.graph_objs as go
 
-date_debut_ARO = '2022111921'
-echeance_ARO = '2022112115'
-date_debut_ARP= '2022111800'
-echeance_ARP = '2022112115'
+date_debut_ARO = '2022120521'
+echeance_ARO = '2022120709'
+date_debut_ARP= '2022120318'
+echeance_ARP = '2022120709'
 
 sel_lon = '1.4605' #selection pour Toulouse
 sel_lat = '43.5866' #selection pour Toulouse
@@ -229,7 +229,7 @@ fig = go.Figure([
         x=list_timerun_aro_2,
         y=run_deterministe_ARO,
         mode='lines',
-        line=dict(color='rgb(31, 119, 180)'),
+        line=dict(color='rgb(141, 83, 62)'),
     ),
     go.Scatter(
         name='Q 90 Arome',
@@ -247,9 +247,9 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(100, 100, 20, 0.3)',
+        fillcolor='rgba(255, 183, 174, 0.3)',
         fill='tonexty',
-        #showlegend=False
+        showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arome',
@@ -267,16 +267,16 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(200, 200, 20, 0.3)',
+        fillcolor='rgba(255, 139, 118, 0.3)',
         fill='tonexty',
-        #showlegend=False
+        showlegend=False
     ),
     go.Scatter(
         name='run deterministe Arpege',
         x=list_timerun_arp_2,
         y=run_deterministe_ARP,
         mode='lines',
-        line=dict(color='rgb(31, 119, 180)'), 
+        line=dict(color='rgb(173, 72, 71)'), 
     ),
     go.Scatter(
         name='Q 90 Arpege',
@@ -288,15 +288,15 @@ fig = go.Figure([
         #showlegend=False
     ),
     go.Scatter(
-        name='Q_10 Arpege',
+        name='Q 10 Arpege',
         x=list_timerun_arp_2,
         y=Q_10_ARP,
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(20, 20, 20, 0.3)',
+        fillcolor='rgba(255, 149, 117, 0.3)',
         fill='tonexty',
-        #showlegend=False
+        showlegend=False
     ),
     go.Scatter(
         name='Q 75 Arpege',
@@ -314,9 +314,9 @@ fig = go.Figure([
         marker=dict(color="#444"),
         line=dict(width=0),
         mode='lines',
-        fillcolor='rgba(250, 250, 250, 0.3)',
+        fillcolor='rgba(206, 97, 74, 0.3)',
         fill='tonexty',
-        #showlegend=False
+        showlegend=False
     )
 ])
 fig.update_layout(
