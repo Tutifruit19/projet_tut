@@ -10,7 +10,7 @@
 # milliemes de degres 
 # membre PEAROME001 ex 
 #UTEMP 6eme argument /home/mpma/henona/path     
-if [ $# -ne 6 ]; then
+if [ $# -ne 7 ]; then
   echo "Usage: $0 date AAAAMMJJHH echeance hauteur param"
   exit 1;
 fi
@@ -27,6 +27,7 @@ suffixe=$(date +%s).$$
 validite=$(opedates ${run} +${echeance}hours)
 jour=${run:0:8}
 UTEMP=$6
+name=$7
 # pour creer sans erreur un repertoir et ses sous repertoires
 #mkdir -p ${UTEMP}/${jour}
 #Construction de la requete DAP3
@@ -48,5 +49,5 @@ rm requete.${suffixe}
 if [ -f P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ]
 then
   rm -f ${UTEMP}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
-  mv P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ${UTEMP}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb
+  mv P-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}.grb ${UTEMP}/Prevision-${param}-${hauteur}-m-${grille}-${run}-ECH-${echeance}-${name}.grb
 fi

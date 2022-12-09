@@ -6,10 +6,10 @@ import numpy as np
 import os
 import plotly.graph_objs as go
 
-date_debut_ARO = '2022120521'
-echeance_ARO = '2022120709'
-date_debut_ARP= '2022120318'
-echeance_ARP = '2022120709'
+date_debut_ARO = '2022120721'
+echeance_ARO = '2022120909'
+date_debut_ARP= '2022120518'
+echeance_ARP = '2022120909'
 
 sel_lon = '1.4605' #selection pour Toulouse
 sel_lat = '43.5866' #selection pour Toulouse
@@ -52,11 +52,12 @@ def recovery_data_aro(echeance,run_debut,param,hauteur,membre):
         for i in range(len(list_timerun_aro)):
             run = list_timerun_aro[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionAROME_sol.sh "+run+" "+str(profondeur)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path+"_1")
-            os.system("./recupPrevisionAROME_sol.sh "+run+" "+str(profondeur-1)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path+"_2")
-            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.nc")
-            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_2.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_2.nc")
-            os.system("cdo -b F64 -sub /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_2.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+".nc")
+            os.system("./recupPrevisionAROME_sol.sh "+run+" "+str(profondeur)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path+" 1")
+            os.system("./recupPrevisionAROME_sol.sh "+run+" "+str(profondeur-3)+" 0 EAU "+membre+" /home/mpma/henona/recovery_data/"+path+" 2")
+            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"-1.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.nc")
+            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i]-3)+"-2.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc")
+            os.system("cdo -b F64 -sub /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+".nc")
+            os.system("rm -f /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURW1S40-"+list_timerun_aro[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc")
     return list_timerun_aro
 
 def recovery_data_arp(echeance,run_debut,param,hauteur,membre):
@@ -79,11 +80,12 @@ def recovery_data_arp(echeance,run_debut,param,hauteur,membre):
         for i in range(len(list_timerun_arp)):
             run = list_timerun_arp[i]
             profondeur = list_echeance[i]
-            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur)+" 0 PRECIP "+membre+" /home/mpma/henona/recovery_data/"+path+"_1")
-            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur-1)+" 0 PRECIP "+membre+" /home/mpma/henona/recovery_data/"+path+"_2")
-            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.nc")
-            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_2.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_2.nc")
-            os.system("cdo -b F64 -sub /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_2.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".nc")
+            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur)+" 0 PRECIP "+membre+" /home/mpma/henona/recovery_data/"+path+" 1")
+            os.system("./recupPrevisionARPEGE_sol.sh "+run+" "+str(profondeur-3)+" 0 PRECIP "+membre+" /home/mpma/henona/recovery_data/"+path+" 2")
+            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"-1.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.nc")
+            os.system("grib_to_netcdf /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i]-3)+"-2.grb -o /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc")
+            os.system("cdo -b F64 -sub /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+".nc")
+            os.system("rm -f /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i])+"_1.nc /home/mpma/henona/recovery_data/"+path+"/Prevision-"+param+"-"+hauteur+"-m-EURAT01-"+list_timerun_arp[i]+"-ECH-"+str(list_echeance[i]-3)+"_2.nc")
     return list_timerun_arp
 def extraction_pt_grille(lat,lon,filename,path,cible):
     #Toulouse lat=43.5866 et lon=1.4605
