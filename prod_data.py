@@ -8,10 +8,10 @@ import os
 import plotly.graph_objs as go
 
 
-date_debut_ARO = '2023010415'
-echeance_ARO = '2023010609'
-date_debut_ARP= '2023010300'
-echeance_ARP = '2023010609'
+date_debut_ARO = '2023011115'
+echeance_ARO = '2023011309'
+date_debut_ARP= '2023011000'
+echeance_ARP = '2023011309'
 
 sel_lon_Toulouse = '1.4605' #selection pour Toulouse
 sel_lat_Toulouse = '43.5866' #selection pour Toulouse
@@ -141,6 +141,11 @@ def sort_ARO(tab):
     Q_25 = []
     Q_75 = []
     Q_90 = []
+    Q_10_2 = []
+    Q_25_2 = []
+    Q_75_2 = []
+    Q_90_2 = []
+    run_deterministe_2 =[]
     run = []
     for j in range(1,np.shape(tab)[1]):
         for i in range(np.shape(tab)[0]):
@@ -149,7 +154,13 @@ def sort_ARO(tab):
         Q_90.append(np.quantile(run,0.90))
         Q_25.append(np.quantile(run,0.25))
         Q_75.append(np.quantile(run,0.75))
-    return [run_deterministe,Q_10,Q_90,Q_25,Q_75]
+    for i in range(len(run_deterministe)):
+        run_deterministe_2.append(run_deterministe[i]-273.15)
+        Q_10_2.append(Q_10[i]-273.15)
+        Q_25_2.append(Q_25[i]-273.15)
+        Q_75_2.append(Q_75[i]-273.15)
+        Q_90_2.append(Q_90[i]-273.15)
+    return [run_deterministe_2,Q_10_2,Q_90_2,Q_25_2,Q_75_2]
 
 def sort_ARP(tab):
     for i in range(np.shape(tab)[0]):
@@ -159,6 +170,11 @@ def sort_ARP(tab):
     Q_25 = []
     Q_75 = []
     Q_90 = []
+    Q_10_2 = []
+    Q_25_2 = []
+    Q_75_2 = []
+    Q_90_2 = []
+    run_deterministe_2 =[]
     run = []
     for j in range(1,np.shape(tab)[1]):
         for i in range(np.shape(tab)[0]):
@@ -167,7 +183,13 @@ def sort_ARP(tab):
         Q_90.append(np.quantile(run,0.90))
         Q_25.append(np.quantile(run,0.25))
         Q_75.append(np.quantile(run,0.75))
-    return [run_deterministe,Q_10,Q_90,Q_25,Q_75]
+    for i in range(len(run_deterministe)):
+        run_deterministe_2.append(run_deterministe[i]-273.15)
+        Q_10_2.append(Q_10[i]-273.15)
+        Q_25_2.append(Q_25[i]-273.15)
+        Q_75_2.append(Q_75[i]-273.15)
+        Q_90_2.append(Q_90[i]-273.15)
+    return [run_deterministe_2,Q_10_2,Q_90_2,Q_25_2,Q_75_2]
 
 def making_output(data,filename):
     file = open(filename,"a")
